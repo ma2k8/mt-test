@@ -1,0 +1,38 @@
+version: "3.3"
+
+services:
+  db:
+    container_name: "db"
+    image: mysql/mysql-server:5.7
+    platform: linux/x86_64
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      LANG: C.UTF-8
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mt_test_local
+      TZ: UTC
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - 3306:3306
+    volumes:
+      - ./docker/db/conf.d:/etc/mysql/conf.d
+      - ./docker/db/initdb.d:/docker-entrypoint-initdb.d
+
+  app:
+    container_name: "app"
+    platform: linux/x86_64
+    build:
+      context: ./
+      dockerfile: ./docker/app/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      BINDING: 0.0.0.0
+    tty: true
+    depends_on:
+      - "db"
+    command: ["./scripts/wait-for-it.sh", "db:3306", "--", "bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
+    volumes:
+      - .:/app
+
