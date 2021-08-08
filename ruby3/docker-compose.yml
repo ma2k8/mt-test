@@ -9,7 +9,7 @@ services:
     environment:
       LANG: C.UTF-8
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mt_test_local
+      MYSQL_DATABASE: mt_local
       TZ: UTC
       MYSQL_ROOT_HOST: '%'
     ports:
@@ -17,6 +17,8 @@ services:
     volumes:
       - ./docker/db/conf.d:/etc/mysql/conf.d
       - ./docker/db/initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - backend
 
   app:
     container_name: "app"
@@ -35,4 +37,20 @@ services:
     command: ["./scripts/wait-for-it.sh", "db:3306", "--", "bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
     volumes:
       - .:/app
+    networks:
+      - frontend
+      - backend
 
+networks:
+  frontend:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.10.0/24
+  backend:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.20.0/24
