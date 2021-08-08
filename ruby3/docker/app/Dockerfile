@@ -27,6 +27,8 @@ WORKDIR /app
 COPY Gemfile /Gemfile
 COPY Gemfile.lock /Gemfile.lock
 RUN bundle install
+RUN rake db:create
+RUN rake db:migrate
 COPY . /app
 
 COPY docker/app/entrypoint.sh /usr/bin/
