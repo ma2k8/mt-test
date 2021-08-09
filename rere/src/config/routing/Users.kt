@@ -15,4 +15,14 @@ fun Routing.users() {
             call.respond(transaction { userController.get(input) })
         }
     }
+    route("/user_filter") {
+        get("/") {
+            call.respond(transaction { userController.filter() })
+        }
+    }
+    route("/user_filter_async") {
+        get("/") {
+            call.respond(transaction {userController.filterAsync()})
+        }
+    }
 }

@@ -10,6 +10,7 @@ import io.ktor.http.content.*
 import io.ktor.features.*
 import io.ktor.auth.*
 import com.fasterxml.jackson.databind.*
+import com.rere.config.database.DatabaseFactory
 import com.rere.config.routing.root
 import com.rere.config.routing.users
 import io.ktor.jackson.*
@@ -78,11 +79,6 @@ fun Application.module(testing: Boolean = false) {
     /**
      * DbSettings
      */
-    Database.connect(
-        url = environment.config.property("app.database.url").getString(),
-        user = environment.config.property("app.database.user").getString(),
-        password = environment.config.property("app.database.password").getString(),
-        driver = "com.mysql.cj.jdbc.Driver"
-    )
+    DatabaseFactory.connect(environment.config)
 }
 

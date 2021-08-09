@@ -1,7 +1,6 @@
 # ファイル変更監視付きでローカルサーバーを立ち上げる
 # 事前にdocker-compose up & make migrateの実行が必要
 run:
-	./gradlew -t installDist &
 	./gradlew run
 
 # dbマイグレーション
