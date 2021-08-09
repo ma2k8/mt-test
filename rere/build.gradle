@@ -1,15 +1,26 @@
 buildscript {
     repositories {
-        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "gradle.plugin.org.flywaydb:gradle-plugin-publishing:6.3.3"
+        classpath 'org.flywaydb:flyway-gradle-plugin:6.3.3'
+        classpath 'mysql:mysql-connector-java:8.0.25'
     }
 }
 
 apply plugin: 'kotlin'
 apply plugin: 'application'
+apply plugin: 'org.flywaydb.flyway'
+
+flyway {
+    url = "jdbc:mysql://127.0.0.1:3306/rere_local?useSSL=false&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&useUnicode=true&connectionCollation=utf8mb4_bin"
+    user = "root"
+    password = "root"
+    locations = ['filesystem:./resources/db/migration']
+}
 
 group 'com.rere'
 version '0.0.1'
@@ -23,12 +34,12 @@ sourceSets {
 }
 
 repositories {
-    mavenLocal()
-    jcenter()
-    maven { url 'https://kotlin.bintray.com/ktor' }
+    mavenCentral()
 }
 
+
 dependencies {
+    // Ktor
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "io.ktor:ktor-server-netty:$ktor_version"
     implementation "ch.qos.logback:logback-classic:$logback_version"
@@ -39,4 +50,14 @@ dependencies {
     implementation "io.ktor:ktor-auth-jwt:$ktor_version"
     implementation "io.ktor:ktor-jackson:$ktor_version"
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
+
+    // database
+    implementation "org.jetbrains.exposed:exposed-core:$exposed_version"
+    implementation "org.jetbrains.exposed:exposed-jdbc:$exposed_version"
+    implementation "org.flywaydb:flyway-core:$flyway_version"
+    implementation "com.zaxxer:HikariCP:$hikaricp_version"
+
+
 }
+
+
