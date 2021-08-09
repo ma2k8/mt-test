@@ -1,13 +1,12 @@
 DROP TABLE IF EXISTS users;
 
-CREATE TABLE users (
-    id MEDIUMINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE
-);
+CREATE TABLE IF NOT EXISTS users (
+    `id` MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(50) NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-// 500件データを作る
 INSERT INTO users (name)
 values
     ('sample'),
@@ -497,5 +496,16 @@ values
     ('sample'),
     ('sample'),
     ('sample'),
-    ('sample')
-;
+    ('sample'),
+    ('sample'),
+    ('sample'),
+    ('sample'),
+    ('sample'),
+    ('sample'),
+    ('sample'),
+    ('sample'),
+    ('sample'),
+    ('sample'),
+    ('sample'),
+    ('sample'),
+    ('sample');
