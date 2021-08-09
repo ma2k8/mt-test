@@ -10,22 +10,24 @@ import io.ktor.http.content.*
 import io.ktor.features.*
 import io.ktor.auth.*
 import com.fasterxml.jackson.databind.*
-import com.rere.app.controllers.UserController
 import com.rere.config.routing.root
 import com.rere.config.routing.users
 import io.ktor.jackson.*
 import io.ktor.routing.get
 import io.ktor.util.*
+import org.jetbrains.exposed.sql.Database
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
+
+    /*
+     * HttpSettings
+     */
     install(Compression) {
-        gzip {
-            priority = 1.0
-        }
+        gzip { priority = 1.0 }
         deflate {
             priority = 10.0
             minimumSize(1024) // condition
@@ -47,8 +49,8 @@ fun Application.module(testing: Boolean = false) {
         header("X-Engine", "Ktor") // will send this header with each response
     }
 
-    install(Authentication) {
-    }
+    // install(Authentication) {
+    // }
 
     install(ContentNegotiation) {
         jackson {
@@ -72,5 +74,15 @@ fun Application.module(testing: Boolean = false) {
             call.respond(mapOf("hello" to "world"))
         }
     }
+
+    /**
+     * DbSettings
+     */
+    Database.connect(
+        url = environment.config.property("app.database.url").getString(),
+        user = environment.config.property("app.database.user").getString(),
+        password = environment.config.property("app.database.password").getString(),
+        driver = "com.mysql.cj.jdbc.Driver"
+    )
 }
 
