@@ -11,6 +11,8 @@ import io.ktor.features.*
 import io.ktor.auth.*
 import com.fasterxml.jackson.databind.*
 import com.rere.app.controllers.UserController
+import com.rere.config.routing.root
+import com.rere.config.routing.users
 import io.ktor.jackson.*
 import io.ktor.routing.get
 import io.ktor.util.*
@@ -55,15 +57,10 @@ fun Application.module(testing: Boolean = false) {
     }
 
     routing {
-        get("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
-        }
-        val userController = UserController()
-        route("/users") {
-            get("/{id}") { input ->
-                val input = UserController.UserInput(call.parameters.getOrFail<Int>("id"))
-                call.respond( userController.get(input))
-            }
+        root()
+
+        routing {
+            users()
         }
 
         // Static feature. Try to access `/static/ktor_logo.svg`

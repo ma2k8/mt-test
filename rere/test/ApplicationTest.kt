@@ -9,7 +9,6 @@ import io.ktor.content.*
 import io.ktor.http.content.*
 import io.ktor.features.*
 import io.ktor.auth.*
-import io.ktor.gson.*
 import com.fasterxml.jackson.databind.*
 import io.ktor.jackson.*
 import kotlin.test.*
