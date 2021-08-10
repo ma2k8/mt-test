@@ -23,10 +23,32 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
+    /*********************************************
+     * ErrorHandling
+     *********************************************/
+    install(StatusPages) {
+        data class ErrorResponse(val message: String?)
 
-    /*
-     * HttpSettings
-     */
+        exception<NotFoundException> {
+            call.respond(HttpStatusCode.NotFound, ErrorResponse(it.message))
+        }
+        exception<BadRequestException> {
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse(it.message))
+        }
+        exception<ParameterConversionException> {
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse(it.message))
+        }
+        exception<DataConversionException> {
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse(it.message))
+        }
+        exception<Throwable> {
+            call.respond(HttpStatusCode.InternalServerError, ErrorResponse(it.message))
+        }
+    }
+
+    /*********************************************
+     * GZip
+     *********************************************/
     install(Compression) {
         gzip { priority = 1.0 }
         deflate {
@@ -35,6 +57,9 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
+    /**********************************************
+     * CORS
+     *********************************************/
     install(CORS) {
         method(HttpMethod.Options)
         method(HttpMethod.Put)
@@ -46,39 +71,39 @@ fun Application.module(testing: Boolean = false) {
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
 
+    /**********************************************
+     * Header
+     *********************************************/
     install(DefaultHeaders) {
         header("X-Engine", "Ktor") // will send this header with each response
     }
 
+    /**********************************************
+     * AuthN
+     *********************************************/
     // install(Authentication) {
     // }
 
+    /**********************************************
+     * Json Serialize
+     *********************************************/
     install(ContentNegotiation) {
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)
         }
     }
 
+    /**********************************************
+     * Routes
+     *********************************************/
     routing {
-        root()
-
-        routing {
-            users()
-        }
-
-        // Static feature. Try to access `/static/ktor_logo.svg`
-        static("/static") {
-            resources("static")
-        }
-
-        get("/json/jackson") {
-            call.respond(mapOf("hello" to "world"))
-        }
+        root() // /~
+        routing { users() } // /users/~
     }
 
-    /**
+    /**********************************************
      * DbSettings
-     */
+     *********************************************/
     DatabaseFactory.connect(environment.config)
 }
 
